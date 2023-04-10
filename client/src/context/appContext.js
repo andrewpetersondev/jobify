@@ -22,7 +22,9 @@ import {
     CLEAR_VALUES,
     CREATE_JOB_BEGIN,
     CREATE_JOB_SUCCESS,
-    CREATE_JOB_ERROR
+    CREATE_JOB_ERROR,
+    GET_JOBS_BEGIN,
+    GET_JOBS_SUCCESS,
 } from "./actions";
 
 import axios from 'axios'
@@ -50,6 +52,10 @@ const initialState = {
     jobType: 'full-time',
     statusOptions: ['pending', 'interview', 'declined'],
     status: 'pending',
+    jobs: [],
+    totalJobs: 0,
+    numOfPages: 1,
+    page: 1,
 
 }
 
@@ -218,9 +224,6 @@ const AppProvider = ({ children }) => {
             payload: { name, value }
         })
     }
-    // const handleChange = (e) => {
-    //     setValues({ ...values, [e.target.name]: e.target.value });
-    // }
 
     const clearValues = () => {
         dispatch({ type: CLEAR_VALUES })
@@ -243,6 +246,32 @@ const AppProvider = ({ children }) => {
         clearAlert()
     }
 
+    const getJobs = async () => {
+        let url = `/jobs`
+        dispatch({ type: GET_JOBS_BEGIN })
+        try {
+            const { data } = await authFetch(url)
+            const { jobs, totalJobs, numOfPages } = data
+            dispatch({
+                type: GET_JOBS_SUCCESS,
+                payload: {
+                    jobs,
+                    totalJobs,
+                    numOfPages,
+                },
+            })
+
+        } catch (error) {
+            console.log(error.response)
+            logoutUser()
+        }
+        clearAlert()
+    }
+
+    // useEffect(() => {
+    //     getJobs()
+    // }, [])
+
 
     return (
         <AppContext.Provider value={{
@@ -257,6 +286,7 @@ const AppProvider = ({ children }) => {
             handleChange,
             clearValues,
             createJob,
+            getJobs,
         }}>
             {children}
         </AppContext.Provider>
