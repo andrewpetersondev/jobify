@@ -2,11 +2,24 @@ import React, { useReducer, useContext } from "react";
 import reducer from "./reducer";
 
 import {
-    DISPLAY_ALERT, CLEAR_ALERT,
-    REGISTER_USER_BEGIN, REGISTER_USER_SUCCESS, REGISTER_USER_ERROR,
-    LOGIN_USER_BEGIN, LOGIN_USER_SUCCESS, LOGIN_USER_ERROR,
-    SETUP_USER_BEGIN, SETUP_USER_SUCCESS, SETUP_USER_ERROR,
-    TOGGLE_SIDEBAR, LOGOUT_USER, UPDATE_USER_BEGIN, UPDATE_USER_SUCCESS, UPDATE_USER_ERROR
+    DISPLAY_ALERT,
+    CLEAR_ALERT,
+    REGISTER_USER_BEGIN,
+    REGISTER_USER_SUCCESS,
+    REGISTER_USER_ERROR,
+    LOGIN_USER_BEGIN,
+    LOGIN_USER_SUCCESS,
+    LOGIN_USER_ERROR,
+    SETUP_USER_BEGIN,
+    SETUP_USER_SUCCESS,
+    SETUP_USER_ERROR,
+    TOGGLE_SIDEBAR,
+    LOGOUT_USER,
+    UPDATE_USER_BEGIN,
+    UPDATE_USER_SUCCESS,
+    UPDATE_USER_ERROR,
+    HANDLE_CHANGE,
+    CLEAR_VALUES
 } from "./actions";
 
 import axios from 'axios'
@@ -196,6 +209,17 @@ const AppProvider = ({ children }) => {
         clearAlert()
     }
 
+    const handleChange = ({ name, value }) => {
+        dispatch({
+            type: HANDLE_CHANGE,
+            payload: { name, value }
+        })
+    }
+
+    const clearValues = () => {
+        dispatch({ type: CLEAR_VALUES })
+    }
+
 
     return (
         <AppContext.Provider value={{
@@ -207,6 +231,7 @@ const AppProvider = ({ children }) => {
             toggleSidebar,
             logoutUser,
             updateUser,
+            handleChange,
         }}>
             {children}
         </AppContext.Provider>
