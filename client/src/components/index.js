@@ -2,7 +2,7 @@ import Alert from './Alert'
 import BigSidebar from './BigSidebar'
 // import ChartsContainer from './ChartsContainer'
 import FormRow from './FormRow'
-// import FormRowSelect from './FormRowSelect'
+import FormRowSelect from './FormRowSelect'
 // import JobsContainer from './JobsContainer'
 import Loading from './Loading'
 import Logo from './Logo'
@@ -17,7 +17,7 @@ export {
   Navbar,
   BigSidebar,
   SmallSidebar,
-  // FormRowSelect,
+  FormRowSelect,
   // SearchContainer,
   // JobsContainer,
   // StatsContainer,
