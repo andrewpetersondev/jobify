@@ -166,14 +166,14 @@ const reducer = (state, action) => {
         }
     }
 
-    if (action.type = HANDLE_CHANGE) {
+    if (action.type === HANDLE_CHANGE) {
         return {
             ...state,
             [action.payload.name]: action.payload.value
         }
     }
 
-    if (action.type = CLEAR_VALUES) {
+    if (action.type === CLEAR_VALUES) {
         const initialState = {
             isEditing: false,
             editJobId: '',

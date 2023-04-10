@@ -218,6 +218,9 @@ const AppProvider = ({ children }) => {
             payload: { name, value }
         })
     }
+    // const handleChange = (e) => {
+    //     setValues({ ...values, [e.target.name]: e.target.value });
+    // }
 
     const clearValues = () => {
         dispatch({ type: CLEAR_VALUES })
