@@ -5,6 +5,7 @@ import FormRowSelect from '../../components/FormRowSelect'
 
 const AddJob = () => {
     const {
+        isLoading,
         isEditing,
         showAlert,
         displayAlert,
@@ -16,7 +17,8 @@ const AddJob = () => {
         status,
         statusOptions,
         handleChange,
-        clearValues
+        clearValues,
+        createJob,
     } = useAppContext()
 
     const handleSubmit = (e) => {
@@ -26,7 +28,11 @@ const AddJob = () => {
         //     displayAlert()
         //     return
         // }
-        console.log('create job')
+        if (isEditing) {
+            // eventually editJob()
+            return
+        }
+        createJob()
     }
 
     const handleJobInput = (e) => {
@@ -87,6 +93,7 @@ const AddJob = () => {
                             className="btn btn-block submit-btn"
                             type="submit"
                             onClick={handleSubmit}
+                            disabled={isLoading}
                         >
                             submit
                         </button>
