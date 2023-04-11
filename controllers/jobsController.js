@@ -3,6 +3,7 @@ import { StatusCodes } from 'http-status-codes'
 import { BadRequestError, NotFoundError } from '../errors/index.js'
 import checkPermissions from '../utils/checkPermissions.js'
 import mongoose from 'mongoose'
+import moment from 'moment'
 
 const createJob = async (req, res) => {
     const { position, company } = req.body
@@ -17,7 +18,20 @@ const createJob = async (req, res) => {
 }
 
 const getAllJobs = async (req, res) => {
-    const jobs = await Job.find({ createdBy: req.user.userId })
+    // const jobs = await Job.find({ createdBy: req.user.userId })
+
+    const { search, status, jobType, sort } = req.query
+
+    const queryObject = {
+        createdBy: req.user.userId
+    }
+
+    // no await
+    let result = Job.find(queryObject)
+
+    // chain sort conditions
+    const jobs = await result
+
     res
         .status(StatusCodes.OK)
         .json({ jobs, totalJobs: jobs.length, numOfPages: 1 })
@@ -110,6 +124,12 @@ const showStats = async (req, res) => {
         { $sort: { '_id.year': -1, '_id.month': -1 } },
         { $limit: 6 }
     ])
+
+    monthlyApplications = monthlyApplications.map((item) => {
+        const { _id: { year, month }, count } = item
+        const date = moment().month(month - 1).year(year).format("MMM Y")
+        return { date, count }
+    }).reverse()
 
     res
         .status(StatusCodes.OK)
