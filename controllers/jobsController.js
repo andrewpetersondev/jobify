@@ -38,8 +38,8 @@ const updateJob = async (req, res) => {
     }
 
     // check permissions
-    console.log(typeof req.user.userId) // string
-    console.log(typeof job.createdBy) // object
+    // console.log(typeof req.user.userId) // string
+    // console.log(typeof job.createdBy) // object
 
     checkPermissions(req.user, job.createdBy)
 
