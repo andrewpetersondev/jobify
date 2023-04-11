@@ -1,6 +1,7 @@
 import Job from '../models/Job.js'
 import { StatusCodes } from 'http-status-codes'
 import { BadRequestError, NotFoundError } from '../errors/index.js'
+import checkPermissions from '../utils/checkPermissions.js'
 
 const createJob = async (req, res) => {
     const { position, company } = req.body
@@ -37,7 +38,10 @@ const updateJob = async (req, res) => {
     }
 
     // check permissions
+    console.log(typeof req.user.userId) // string
+    console.log(typeof job.createdBy) // object
 
+    checkPermissions(req.user, job.createdBy)
 
     const updatedJob = await Job.findOneAndUpdate({ _id: jobId }, req.body, {
         new: true,
@@ -48,7 +52,25 @@ const updateJob = async (req, res) => {
 }
 
 const deleteJob = async (req, res) => {
-    res.send('delete job')
+
+    const { id: jobId } = req.params
+    const job = await Job.findOne({ _id: jobId })
+    console.log('DELETE JOB')
+    console.log(job)
+
+    if (!job) {
+        throw new NotFoundError(`No job with id : ${jobId}`)
+    }
+
+    checkPermissions(req.user, job.createdBy)
+
+    // await job.remove() // remove() has been deprecated use deleteOne() instead
+    await job.deleteOne()
+
+    res
+        .status(StatusCodes.OK)
+        .json({ msg: 'Success! Job removed' })
+
 }
 
 const showStats = async (req, res) => {
