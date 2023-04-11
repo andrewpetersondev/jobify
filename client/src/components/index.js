@@ -1,6 +1,6 @@
 import Alert from './Alert'
 import BigSidebar from './BigSidebar'
-// import ChartsContainer from './ChartsContainer'
+import ChartsContainer from './ChartsContainer'
 import FormRow from './FormRow'
 import FormRowSelect from './FormRowSelect'
 import Job from './Job'
@@ -10,7 +10,7 @@ import Logo from './Logo'
 import Navbar from './Navbar'
 import SearchContainer from './SearchContainer'
 import SmallSidebar from './SmallSidebar'
-// import StatsContainer from './StatsContainer'
+import StatsContainer from './StatsContainer'
 import JobInfo from './JobInfo'
 
 export {
@@ -25,7 +25,7 @@ export {
   JobsContainer,
   Job,
   JobInfo,
-  // StatsContainer,
-  // ChartsContainer,
+  StatsContainer,
+  ChartsContainer,
   Loading,
 }
