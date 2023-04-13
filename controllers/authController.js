@@ -1,76 +1,78 @@
 import User from '../models/User.js'
-import { StatusCodes } from 'http-status-codes';
+import { StatusCodes } from 'http-status-codes'
 import { BadRequestError, UnAuthenticatedError } from '../errors/index.js'
+import attachCookie from '../utils/attachCookie.js'
 
 const register = async (req, res) => {
-    const { name, email, password } = req.body
-    if (!name || !email || !password) {
-        throw new BadRequestError('please provide all values')
-    }
-    const userAlreadyExists = await User.findOne({ email })
-    if (userAlreadyExists) {
-        throw new BadRequestError('Email already in use')
-    }
-    const user = await User.create({ name, email, password })
-    const token = user.createJWT()
-    res.status(StatusCodes.CREATED).json({
-        user: {
-            email: user.email,
-            lastName: user.lastName,
-            location: user.location,
-            name: user.name
-        },
-        token,
-        location: user.location
-    })
-    console.log(user)
+  const { name, email, password } = req.body
+  if (!name || !email || !password) {
+    throw new BadRequestError('please provide all values')
+  }
+  const userAlreadyExists = await User.findOne({ email })
+  if (userAlreadyExists) {
+    throw new BadRequestError('Email already in use')
+  }
+  const user = await User.create({ name, email, password })
+  const token = user.createJWT()
+  attachCookie({ res, token })
+  res.status(StatusCodes.CREATED).json({
+    user: {
+      email: user.email,
+      lastName: user.lastName,
+      location: user.location,
+      name: user.name,
+    },
+    location: user.location,
+  })
+  console.log(user)
 }
 
 const login = async (req, res) => {
+  const { email, password } = req.body
 
-    const { email, password } = req.body
+  if (!email || !password) {
+    throw new BadRequestError('Please provide all values')
+  }
 
-    if (!email || !password) {
-        throw new BadRequestError("Please provide all values")
-    }
+  const user = await User.findOne({ email }).select('+password')
 
-    const user = await User.findOne({ email }).select("+password")
+  if (!user) {
+    throw new UnauthenticatedError('Invalid Credentials')
+  }
 
-    if (!user) {
-        throw new UnauthenticatedError("Invalid Credentials")
-    }
+  const isPasswordCorrect = await user.comparePassword(password)
 
-    const isPasswordCorrect = await user.comparePassword(password)
+  if (!isPasswordCorrect) {
+    throw new UnauthenticatedError('Invalid Credentials')
+  }
 
-    if (!isPasswordCorrect) {
-        throw new UnauthenticatedError("Invalid Credentials")
-    }
+  const token = user.createJWT()
+  user.password = undefined
 
-    const token = user.createJWT()
+  attachCookie({ res, token })
 
-    user.password = undefined
-
-    res.status(StatusCodes.OK).json({ user, token, location: user.location })
-};
+  res.status(StatusCodes.OK).json({ user, location: user.location })
+}
 
 const updateUser = async (req, res) => {
-    const { email, name, lastName, location } = req.body
-    if (!email || !name || !location) {
-        throw new BadRequestError('Please provide all values')
-    }
-    const user = await User.findOne({ _id: req.user.userId })
-    user.email = email
-    user.name = name
-    user.lastName = lastName
-    user.location = location
+  const { email, name, lastName, location } = req.body
+  if (!email || !name || !location) {
+    throw new BadRequestError('Please provide all values')
+  }
+  const user = await User.findOne({ _id: req.user.userId })
+  user.email = email
+  user.name = name
+  user.lastName = lastName
+  user.location = location
 
-    await user.save()
+  await user.save()
 
-    // various setups
-    // in this case only id
-    // if other properties included, must re-generate
-    const token = user.createJWT()
-    res.status(StatusCodes.OK).json({ user, token, location: user.location }) // why do i change location
+  // various setups
+  // in this case only id
+  // if other properties included, must re-generate
+  const token = user.createJWT()
+  attachCookie({ res, token })
+  res.status(StatusCodes.OK).json({ user, location: user.location }) // why do i change location
 }
 
 export { register, login, updateUser }
