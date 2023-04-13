@@ -67,12 +67,14 @@ const updateUser = async (req, res) => {
 
   await user.save()
 
-  // various setups
-  // in this case only id
-  // if other properties included, must re-generate
   const token = user.createJWT()
   attachCookie({ res, token })
   res.status(StatusCodes.OK).json({ user, location: user.location }) // why do i change location
 }
 
-export { register, login, updateUser }
+const getCurrentUser = async (req, res) => {
+  const user = await User.findOne({ _id: req.user.userId })
+  res.status(StatusCodes.OK).json({ user, location: user.location })
+}
+
+export { register, login, updateUser, getCurrentUser }

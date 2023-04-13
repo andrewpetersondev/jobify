@@ -1,4 +1,4 @@
-import React, { useReducer, useContext } from 'react'
+import React, { useReducer, useContext, useEffect } from 'react'
 import reducer from './reducer'
 
 import {
@@ -35,6 +35,8 @@ import {
   SHOW_STATS_SUCCESS,
   CLEAR_FILTERS,
   CHANGE_PAGE,
+  GET_CURRENT_USER_BEGIN,
+  GET_CURRENT_USER_SUCCESS,
 } from './actions'
 
 import axios from 'axios'
@@ -46,6 +48,7 @@ const initialState = {
   alertType: '',
   user: null,
   userLocation: '',
+  userLoading: true,
   showSidebar: false,
   isEditing: false,
   editJobId: '',
@@ -329,9 +332,21 @@ const AppProvider = ({ children }) => {
     dispatch({ type: CHANGE_PAGE, payload: { page } })
   }
 
-  // useEffect(() => {
-  //     getJobs()
-  // }, [])
+  const getCurrentUser = async () => {
+    dispatch({ type: GET_CURRENT_USER_BEGIN })
+    try {
+      const { data } = await authFetch('/auth/getCurrentUser')
+      const { user, location } = data
+      dispatch({ type: GET_CURRENT_USER_SUCCESS, payload: { user, location } })
+    } catch (error) {
+      if (error.response.status === 401) return
+      logoutUser()
+    }
+  }
+
+  useEffect(() => {
+    getCurrentUser()
+  }, [])
 
   return (
     <AppContext.Provider
@@ -354,6 +369,7 @@ const AppProvider = ({ children }) => {
         showStats,
         clearFilters,
         changePage,
+        getCurrentUser,
       }}
     >
       {children}
