@@ -14,6 +14,7 @@ import {
   login,
   updateUser,
   getCurrentUser,
+  logout,
 } from '../controllers/authController.js'
 
 import authenticateUser from '../middleware/auth.js'
@@ -21,7 +22,8 @@ import testUser from '../middleware/testUser.js'
 
 router.route('/register').post(apiLimiter, register)
 router.route('/login').post(apiLimiter, login)
+router.route('/logout').get(logout)
 router.route('/updateUser').patch(authenticateUser, testUser, updateUser)
-router.route('/getCurrentUser').patch(authenticateUser, getCurrentUser)
+router.route('/getCurrentUser').get(authenticateUser, getCurrentUser)
 
 export default router
